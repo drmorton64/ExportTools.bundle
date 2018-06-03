@@ -180,5 +180,11 @@
         "label": "Timeout when requesting info from PMS in sec.",
         "type": "text",
         "default": "30"
-    }   
+    },
+    {
+        "id": "Split_Dup",
+        "label": "Split duplicates movies into seperate lines",
+        "type": "bool",
+        "default": "true"
+    }
 ]

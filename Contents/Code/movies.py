@@ -93,7 +93,7 @@ def getMovieHeader(PrefsLevel):
     return fieldnames
 
 
-def getMovieInfo(myMedia, myRow):
+def getMovieInfo(myMedia, myRow, itemCounter=0):
     '''
     This function will return the info for movies
     '''

@@ -622,8 +622,38 @@ def scanMovieDB(myMediaURL, outFile):
                         myExtendedInfoURL,
                         timeout=float(PMSTIMEOUT)).xpath('//Video')[0]
                 # Export the info
-                myRow = movies.getMovieInfo(media, myRow)
-                output.writerow(myRow)
+                if Prefs['Split_Dup']:
+                    totalItems = len(media.xpath('//Media'))                    
+                    if totalItems > 1:                        
+                        itemcounter = 0
+                        while True:
+                            myRow = {}
+                            myRow = movies.getMovieInfo(
+                                        media,
+                                        myRow,
+                                        itemcounter)
+                            output.writerow(myRow)
+                            itemcounter += 1
+                            if itemcounter > totalItems - 1:
+                                break
+                    else:
+                        myRow = movies.getMovieInfo(media, myRow)
+                        output.writerow(myRow)
+
+
+
+
+
+
+
+
+
+
+
+
+                else:
+                    myRow = movies.getMovieInfo(media, myRow)
+                    output.writerow(myRow)
                 iCurrent += 1
                 bScanStatusCount += 1
                 Log.Debug("Media #%s from database: '%s'" % (

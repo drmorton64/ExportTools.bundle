@@ -124,13 +124,17 @@ def GetRegInfo(myMedia, myField, default=''):
     return myLookUp.encode('utf8')
 
 
-def GetRegInfo2(myMedia, myField, default=consts.DEFAULT, key='N/A'):
+def GetRegInfo2(myMedia,
+                myField,
+                default=consts.DEFAULT,
+                key='N/A',
+                itemcounter=0):
     ''' Pull's a field from the xml '''
     returnVal = ''
     global retVal
     retVal = ''
     try:
-        fieldsplit = myField.rsplit('@', 1)
+        fieldsplit = myField.rsplit('@', 1)        
         # Single attribute lookup
         if fieldsplit[0] == '':
             try:
@@ -156,6 +160,11 @@ def GetRegInfo2(myMedia, myField, default=consts.DEFAULT, key='N/A'):
                 returnVal = default
                 return WrapStr(fixCRLF(returnVal)).encode('utf8')
         else:
+            print 'Ged4 not single', myField
+            if 'Media' in myField:
+                myField = myField.replace('Media', 'Media[' + str(itemcounter) + ']')
+            print 'Ged5 not single', myField
+            
             # Attributes from xpath
             try:
                 retVals = myMedia.xpath(fieldsplit[0][:-1])
@@ -165,6 +174,7 @@ def GetRegInfo2(myMedia, myField, default=consts.DEFAULT, key='N/A'):
                 pass
             for retVal2 in retVals:
                 try:
+
                     # Get attribute
                     retVal = default
                     retVal = String.Unquote(retVal2.get(fieldsplit[1]))
@@ -243,7 +253,7 @@ def getLevelFields(levelFields, fieldnames):
     return fieldnamesList
 
 
-def getItemInfo(et, myRow, fieldList):
+def getItemInfo(et, myRow, fieldList, itemcounter=0):
     ''' fetch the actual info for the element '''
     try:
         for item in fieldList:
@@ -257,9 +267,14 @@ def getItemInfo(et, myRow, fieldList):
                                 et,
                                 value,
                                 consts.DEFAULT,
-                                key=key):
+                                key=key,
+                                itemcounter=itemcounter):
                             element = GetRegInfo2(
-                                et, '@title', consts.DEFAULT, key='Title')
+                                et,
+                                '@title',
+                                consts.DEFAULT,
+                                key='Title',
+                                itemcounter=itemcounter)
                         else:
                             element = GetRegInfo2(
                                 et, value, consts.DEFAULT, key=key)
@@ -268,7 +283,8 @@ def getItemInfo(et, myRow, fieldList):
                             et,
                             value,
                             consts.DEFAULT,
-                            key='Part File Only')
+                            key='Part File Only',
+                            itemcounter=itemcounter)
                     if key == 'Part File Only':
                         element = os.path.split(element)[1]
                     else:
@@ -280,15 +296,29 @@ def getItemInfo(et, myRow, fieldList):
                                 et,
                                 value,
                                 consts.DEFAULT,
-                                key=key):
+                                key=key,
+                                itemcounter=itemcounter):
                             element = GetRegInfo2(
-                                et, '@title', consts.DEFAULT, key='Title')
+                                et,
+                                '@title',
+                                consts.DEFAULT,
+                                key='Title',
+                                itemcounter=itemcounter)
                         else:
                             element = GetRegInfo2(
-                                et, value, consts.DEFAULT, key=key)
+                                et,
+                                value,
+                                consts.DEFAULT,
+                                key=key,
+                                itemcounter=itemcounter)
                 # part file
                 elif key.startswith('Part File'):
-                    element = GetRegInfo2(et, value, consts.DEFAULT, key=key)
+                    element = GetRegInfo2(
+                        et,
+                        value,
+                        consts.DEFAULT,
+                        key=key,
+                        itemcounter=itemcounter)
                     if key == 'Part File':
                         element = os.path.split(element)[1]
                     elif key == 'Part File Path':
@@ -301,7 +331,12 @@ def getItemInfo(et, myRow, fieldList):
                     if element == '':
                         element = consts.DEFAULT
                 else:
-                    element = GetRegInfo2(et, value, consts.DEFAULT, key=key)
+                    element = GetRegInfo2(
+                        et,
+                        value,
+                        consts.DEFAULT,
+                        key=key,
+                        itemcounter=itemcounter)
                 # Empty fields are still present, but with a length of 0
                 if element == '':
                     element = consts.DEFAULT
